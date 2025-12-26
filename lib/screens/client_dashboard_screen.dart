@@ -84,7 +84,9 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/shift-request');
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primaryRed,
                           foregroundColor: AppColors.textWhite,
@@ -97,19 +99,41 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
                       ),
                     ),
                     const SizedBox(height: 30),
-                    const Text(
-                      'Recent Requests',
-                      style: TextStyle(
-                        color: AppColors.textLightGray,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Recent Requests',
+                          style: TextStyle(
+                            color: AppColors.textLightGray,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/shift-request');
+                          },
+                          child: const Text(
+                            'View All',
+                            style: TextStyle(color: AppColors.primaryRed),
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 12),
-                    _buildEmptyStateCard(
-                      icon: Icons.calendar_today,
-                      title: 'No Shift Requests yet',
-                      subtitle: 'Create Your First Request',
+                    _buildShiftRequestCard(
+                      eventType: 'Basketball Tournament',
+                      date: '10/20/2024',
+                      time: '8:00 AM - 4:00 PM',
+                      status: 'Pending',
+                    ),
+                    const SizedBox(height: 12),
+                    _buildShiftRequestCard(
+                      eventType: 'Soccer Match',
+                      date: '10/18/2024',
+                      time: '2:00 PM - 6:00 PM',
+                      status: 'Approved',
                     ),
                     const SizedBox(height: 30),
                     const Text(
@@ -285,6 +309,75 @@ class _ClientDashboardScreenState extends State<ClientDashboardScreen> {
               textAlign: TextAlign.center,
             ),
           ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildShiftRequestCard({
+    required String eventType,
+    required String date,
+    required String time,
+    required String status,
+  }) {
+    final isApproved = status == 'Approved';
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.darkCardBackground,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  eventType,
+                  style: const TextStyle(
+                    color: AppColors.textWhite,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '$date • $time',
+                  style: const TextStyle(
+                    color: AppColors.textLightGray,
+                    fontSize: 14,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: isApproved
+                        ? AppColors.accentGreen.withValues(alpha: 0.2)
+                        : AppColors.accentOrange.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    status,
+                    style: TextStyle(
+                      color: isApproved ? AppColors.accentGreen : AppColors.accentOrange,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (isApproved)
+            IconButton(
+              icon: const Icon(Icons.edit, color: AppColors.textWhite),
+              onPressed: () {
+                Navigator.pushNamed(context, '/edit-shift');
+              },
+              tooltip: 'Edit Shift',
+            ),
         ],
       ),
     );

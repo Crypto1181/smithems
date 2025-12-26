@@ -20,6 +20,10 @@ import 'screens/admin_payroll_screen.dart';
 import 'screens/admin_user_management_screen.dart';
 import 'screens/admin_inactive_users_screen.dart';
 import 'screens/messages_list_screen.dart';
+import 'screens/calendar_view_screen.dart';
+import 'screens/time_tracking_screen.dart';
+import 'screens/shift_request_screen.dart';
+import 'screens/edit_shift_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -62,6 +66,10 @@ class MyApp extends StatelessWidget {
         '/admin-user-management': (context) => const AdminUserManagementScreen(),
         '/admin-inactive-users': (context) => const AdminInactiveUsersScreen(),
         '/messages-list': (context) => const MessagesListScreen(),
+        '/calendar-view': (context) => const CalendarViewScreen(),
+        '/time-tracking': (context) => const TimeTrackingScreen(),
+        '/shift-request': (context) => const ShiftRequestScreen(),
+        '/edit-shift': (context) => const EditShiftScreen(),
       },
     );
   }

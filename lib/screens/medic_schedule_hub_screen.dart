@@ -15,6 +15,18 @@ class MedicScheduleHubScreen extends StatefulWidget {
 
 class _MedicScheduleHubScreenState extends State<MedicScheduleHubScreen> {
   int _currentNavIndex = 1;
+  final List<Map<String, dynamic>> _availableShifts = [
+    {'id': 1, 'title': 'Patient Transfer', 'time': '10:00 AM - 12:00 PM', 'date': '12', 'claimed': false},
+    {'id': 2, 'title': 'Lunch Break', 'time': '12:00 PM - 1:00 PM', 'date': '12', 'claimed': false},
+    {'id': 3, 'title': 'Patient Transfer', 'time': '1:00 PM - 3:00 PM', 'date': '12', 'claimed': false},
+    {'id': 4, 'title': 'Patient Transfer', 'time': '3:00 PM - 5:00 PM', 'date': '12', 'claimed': false},
+  ];
+  final List<Map<String, dynamic>> _myShifts = [
+    {'id': 5, 'title': 'Patient Transfer', 'time': '10:00 AM - 12:00 PM', 'date': '12'},
+    {'id': 6, 'title': 'Lunch Break', 'time': '12:00 PM - 1:00 PM', 'date': '12'},
+    {'id': 7, 'title': 'Patient Transfer', 'time': '1:00 PM - 3:00 PM', 'date': '12'},
+    {'id': 8, 'title': 'Patient Transfer', 'time': '3:00 PM - 5:00 PM', 'date': '12'},
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +38,22 @@ class _MedicScheduleHubScreenState extends State<MedicScheduleHubScreen> {
           onPressed: () {},
         ),
         title: const Text('Schedule'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.calendar_today),
+            onPressed: () {
+              Navigator.pushNamed(context, '/calendar-view');
+            },
+            tooltip: 'Calendar View',
+          ),
+          IconButton(
+            icon: const Icon(Icons.access_time),
+            onPressed: () {
+              Navigator.pushNamed(context, '/time-tracking');
+            },
+            tooltip: 'Time Tracking',
+          ),
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -42,13 +70,15 @@ class _MedicScheduleHubScreenState extends State<MedicScheduleHubScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              _buildScheduleItem('Patient Transfer', '10:00 AM - 12:00 PM'),
-              const SizedBox(height: 12),
-              _buildScheduleItem('Lunch Break', '12:00 PM - 1:00 PM'),
-              const SizedBox(height: 12),
-              _buildScheduleItem('Patient Transfer', '1:00 PM - 3:00 PM'),
-              const SizedBox(height: 12),
-              _buildScheduleItem('Patient Transfer', '3:00 PM - 5:00 PM'),
+              ..._myShifts.map((shift) => Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: _buildScheduleItem(
+                      shift['title'],
+                      shift['time'],
+                      date: shift['date'],
+                      isMyShift: true,
+                    ),
+                  )),
               const SizedBox(height: 40),
               const Text(
                 'Available Shifts',
@@ -59,13 +89,10 @@ class _MedicScheduleHubScreenState extends State<MedicScheduleHubScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              _buildScheduleItem('Patient Transfer', '10:00 AM - 12:00 PM'),
-              const SizedBox(height: 12),
-              _buildScheduleItem('Lunch Break', '12:00 PM - 1:00 PM'),
-              const SizedBox(height: 12),
-              _buildScheduleItem('Patient Transfer', '1:00 PM - 3:00 PM'),
-              const SizedBox(height: 12),
-              _buildScheduleItem('Patient Transfer', '3:00 PM - 5:00 PM'),
+              ..._availableShifts.map((shift) => Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: _buildAvailableShiftItem(shift),
+                  )),
               const SizedBox(height: 20),
             ],
           ),
@@ -128,7 +155,22 @@ class _MedicScheduleHubScreenState extends State<MedicScheduleHubScreen> {
     );
   }
 
-  Widget _buildScheduleItem(String title, String time) {
+  void _claimShift(int shiftId) {
+    setState(() {
+      final shift = _availableShifts.firstWhere((s) => s['id'] == shiftId);
+      shift['claimed'] = true;
+      _myShifts.add(shift);
+      _availableShifts.remove(shift);
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Shift claimed successfully!'),
+        backgroundColor: AppColors.accentGreen,
+      ),
+    );
+  }
+
+  Widget _buildScheduleItem(String title, String time, {String? date, bool isMyShift = false}) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -144,17 +186,17 @@ class _MedicScheduleHubScreenState extends State<MedicScheduleHubScreen> {
               color: AppColors.darkBackground,
               borderRadius: BorderRadius.circular(8),
             ),
-            child: const Column(
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
+                const Icon(
                   Icons.calendar_today,
                   color: AppColors.textWhite,
                   size: 20,
                 ),
                 Text(
-                  '12',
-                  style: TextStyle(
+                  date ?? '12',
+                  style: const TextStyle(
                     color: AppColors.textWhite,
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
@@ -186,6 +228,82 @@ class _MedicScheduleHubScreenState extends State<MedicScheduleHubScreen> {
                 ),
               ],
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAvailableShiftItem(Map<String, dynamic> shift) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.darkCardBackground,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(
+              color: AppColors.darkBackground,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.calendar_today,
+                  color: AppColors.textWhite,
+                  size: 20,
+                ),
+                Text(
+                  shift['date'],
+                  style: const TextStyle(
+                    color: AppColors.textWhite,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  shift['title'],
+                  style: const TextStyle(
+                    color: AppColors.textWhite,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  shift['time'],
+                  style: const TextStyle(
+                    color: AppColors.textLightGray,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () => _claimShift(shift['id']),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primaryRed,
+              foregroundColor: AppColors.textWhite,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: const Text('Claim'),
           ),
         ],
       ),

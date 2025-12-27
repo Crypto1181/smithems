@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../constants/colors.dart';
 import '../widgets/bottom_nav_bar.dart';
+import '../widgets/app_drawer.dart';
 import 'client_dashboard_screen.dart';
 import 'medic_profile_setting_screen.dart';
 import 'admin_payroll_screen.dart';
@@ -32,10 +33,13 @@ class _MedicScheduleHubScreenState extends State<MedicScheduleHubScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.darkBackground,
+      drawer: const AppDrawer(),
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.menu),
-          onPressed: () {},
+          onPressed: () {
+            Scaffold.of(context).openDrawer();
+          },
         ),
         title: const Text('Schedule'),
         actions: [

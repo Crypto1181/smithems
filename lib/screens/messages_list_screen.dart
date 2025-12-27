@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../constants/colors.dart';
 import '../widgets/bottom_nav_bar.dart';
+import '../widgets/app_drawer.dart';
 import 'client_dashboard_screen.dart';
 import 'medic_schedule_hub_screen.dart';
 import 'medic_profile_setting_screen.dart';
@@ -51,10 +52,13 @@ class _MessagesListScreenState extends State<MessagesListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.darkBackground,
+      drawer: const AppDrawer(),
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.menu),
-          onPressed: () {},
+          onPressed: () {
+            Scaffold.of(context).openDrawer();
+          },
         ),
         title: const Text('Messages'),
       ),
@@ -194,62 +198,58 @@ class _MessagesListScreenState extends State<MessagesListScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          conversation['title'],
-                          style: TextStyle(
-                            color: AppColors.textWhite,
-                            fontSize: 18,
-                            fontWeight: conversation['unread'] == true
-                                ? FontWeight.bold
-                                : FontWeight.w600,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      Text(
-                        conversation['time'],
-                        style: TextStyle(
-                          color: conversation['unread'] == true
-                              ? AppColors.primaryRed
-                              : AppColors.textLightGray,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
+                  Text(
+                    conversation['title'],
+                    style: TextStyle(
+                      color: AppColors.textWhite,
+                      fontSize: 18,
+                      fontWeight: conversation['unread'] == true
+                          ? FontWeight.bold
+                          : FontWeight.w600,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          '${conversation['sender']}: ${conversation['lastMessage']}',
-                          style: TextStyle(
-                            color: AppColors.textLightGray,
-                            fontSize: 14,
-                            fontWeight: conversation['unread'] == true
-                                ? FontWeight.w600
-                                : FontWeight.normal,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      if (conversation['unread'] == true)
-                        Container(
-                          width: 8,
-                          height: 8,
-                          decoration: const BoxDecoration(
-                            color: AppColors.primaryRed,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                    ],
+                  Text(
+                    '${conversation['sender']}: ${conversation['lastMessage']}',
+                    style: TextStyle(
+                      color: AppColors.textLightGray,
+                      fontSize: 14,
+                      fontWeight: conversation['unread'] == true
+                          ? FontWeight.w600
+                          : FontWeight.normal,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
                 ],
               ),
+            ),
+            const SizedBox(width: 12),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  conversation['time'],
+                  style: TextStyle(
+                    color: conversation['unread'] == true
+                        ? AppColors.primaryRed
+                        : AppColors.textLightGray,
+                    fontSize: 12,
+                  ),
+                ),
+                if (conversation['unread'] == true) ...[
+                  const SizedBox(height: 8),
+                  Container(
+                    width: 8,
+                    height: 8,
+                    decoration: const BoxDecoration(
+                      color: AppColors.primaryRed,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ],
+              ],
             ),
           ],
         ),

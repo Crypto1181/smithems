@@ -10,15 +10,25 @@ class ShiftRequestScreen extends StatefulWidget {
 
 class _ShiftRequestScreenState extends State<ShiftRequestScreen> {
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController _eventNameController = TextEditingController();
+  final TextEditingController _eventLocationController = TextEditingController();
   DateTime? _selectedDate;
-  TimeOfDay? _startTime;
-  TimeOfDay? _endTime;
-  String? _selectedVenue;
+  TimeOfDay? _eventTime;
+  final TextEditingController _eventDurationController = TextEditingController();
   final TextEditingController _eventTypeController = TextEditingController();
+  final TextEditingController _requiredMedicsController = TextEditingController();
+  String? _certificationLevel;
+  final TextEditingController _payRateController = TextEditingController();
+  String? _eligibleMedicGroups;
 
   @override
   void dispose() {
+    _eventNameController.dispose();
+    _eventLocationController.dispose();
+    _eventDurationController.dispose();
     _eventTypeController.dispose();
+    _requiredMedicsController.dispose();
+    _payRateController.dispose();
     super.dispose();
   }
 
@@ -31,7 +41,7 @@ class _ShiftRequestScreenState extends State<ShiftRequestScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text('Request Shift'),
+        title: const Text('New Request'),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -41,18 +51,11 @@ class _ShiftRequestScreenState extends State<ShiftRequestScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Event Details',
-                  style: TextStyle(
-                    color: AppColors.textWhite,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                _buildTextField('Event Type', 'Enter event type', null),
+                _buildTextField('Event Name', _eventNameController),
                 const SizedBox(height: 20),
-                _buildDateField('Date', _selectedDate, () async {
+                _buildTextField('Event Location', _eventLocationController),
+                const SizedBox(height: 20),
+                _buildDateField('Event Date', _selectedDate, () async {
                   final date = await showDatePicker(
                     context: context,
                     initialDate: DateTime.now(),
@@ -72,84 +75,88 @@ class _ShiftRequestScreenState extends State<ShiftRequestScreen> {
                   }
                 }),
                 const SizedBox(height: 20),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _buildTimeField('Start Time', _startTime, () async {
-                        final time = await showTimePicker(
-                          context: context,
-                          initialTime: TimeOfDay.now(),
-                          builder: (context, child) {
-                            return Theme(
-                              data: ThemeData.dark(),
-                              child: child!,
-                            );
-                          },
-                        );
-                        if (time != null) {
-                          setState(() {
-                            _startTime = time;
-                          });
-                        }
-                      }),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: _buildTimeField('End Time', _endTime, () async {
-                        final time = await showTimePicker(
-                          context: context,
-                          initialTime: TimeOfDay.now(),
-                          builder: (context, child) {
-                            return Theme(
-                              data: ThemeData.dark(),
-                              child: child!,
-                            );
-                          },
-                        );
-                        if (time != null) {
-                          setState(() {
-                            _endTime = time;
-                          });
-                        }
-                      }),
-                    ),
-                  ],
-                ),
+                _buildTimeField('Event Time', _eventTime, () async {
+                  final time = await showTimePicker(
+                    context: context,
+                    initialTime: TimeOfDay.now(),
+                    builder: (context, child) {
+                      return Theme(
+                        data: ThemeData.dark(),
+                        child: child!,
+                      );
+                    },
+                  );
+                  if (time != null) {
+                    setState(() {
+                      _eventTime = time;
+                    });
+                  }
+                }),
                 const SizedBox(height: 20),
-                _buildDropdownField('Venue', _selectedVenue, ['Venue 1', 'Venue 2', 'Venue 3'], (value) {
+                _buildTextField('Event Duration', _eventDurationController),
+                const SizedBox(height: 20),
+                _buildTextField('Event Type', _eventTypeController),
+                const SizedBox(height: 20),
+                _buildTextField('Required Medics', _requiredMedicsController, isNumber: true),
+                const SizedBox(height: 20),
+                _buildDropdownField('Certification Level', _certificationLevel, ['Basic', 'Advanced', 'Paramedic'], (value) {
                   setState(() {
-                    _selectedVenue = value;
+                    _certificationLevel = value;
                   });
                 }),
                 const SizedBox(height: 20),
-                _buildTextField('Number of Medics', 'Enter number', null, isNumber: true),
+                _buildTextField('Pay Rate', _payRateController, isNumber: true),
                 const SizedBox(height: 20),
-                _buildTextField('Additional Notes', 'Enter any additional information', null, maxLines: 4),
+                _buildDropdownField('Eligible Medic Groups', _eligibleMedicGroups, ['Group A', 'Group B', 'Group C', 'All Groups'], (value) {
+                  setState(() {
+                    _eligibleMedicGroups = value;
+                  });
+                }),
                 const SizedBox(height: 40),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Shift request submitted successfully!'),
-                            backgroundColor: AppColors.accentGreen,
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.darkCardBackground,
+                          foregroundColor: AppColors.textWhite,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                        );
-                        Navigator.pop(context);
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryRed,
-                      foregroundColor: AppColors.textWhite,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Text('Cancel'),
                       ),
                     ),
-                    child: const Text('Submit Request'),
-                  ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Request published successfully!'),
+                                backgroundColor: AppColors.accentGreen,
+                              ),
+                            );
+                            Navigator.pop(context);
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primaryRed,
+                          foregroundColor: AppColors.textWhite,
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: const Text('Publish'),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -159,7 +166,7 @@ class _ShiftRequestScreenState extends State<ShiftRequestScreen> {
     );
   }
 
-  Widget _buildTextField(String label, String hint, Function(String?)? onChanged, {bool isNumber = false, int maxLines = 1}) {
+  Widget _buildTextField(String label, TextEditingController controller, {bool isNumber = false}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -173,14 +180,13 @@ class _ShiftRequestScreenState extends State<ShiftRequestScreen> {
         ),
         const SizedBox(height: 8),
         TextFormField(
+          controller: controller,
           decoration: InputDecoration(
-            hintText: hint,
+            hintText: 'Enter $label',
             hintStyle: const TextStyle(color: AppColors.textLightGray),
           ),
           style: const TextStyle(color: AppColors.textWhite),
           keyboardType: isNumber ? TextInputType.number : TextInputType.text,
-          maxLines: maxLines,
-          onChanged: onChanged,
           validator: (value) {
             if (value == null || value.isEmpty) {
               return 'Please enter $label';
@@ -219,7 +225,7 @@ class _ShiftRequestScreenState extends State<ShiftRequestScreen> {
                 Text(
                   date != null
                       ? '${date.month}/${date.day}/${date.year}'
-                      : 'Select date',
+                      : 'Select Event Date',
                   style: TextStyle(
                     color: date != null ? AppColors.textWhite : AppColors.textLightGray,
                     fontSize: 16,
@@ -265,7 +271,7 @@ class _ShiftRequestScreenState extends State<ShiftRequestScreen> {
                 Text(
                   time != null
                       ? '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}'
-                      : 'Select time',
+                      : 'Select Event Time',
                   style: TextStyle(
                     color: time != null ? AppColors.textWhite : AppColors.textLightGray,
                     fontSize: 16,
@@ -308,10 +314,12 @@ class _ShiftRequestScreenState extends State<ShiftRequestScreen> {
             isExpanded: true,
             underline: Container(),
             dropdownColor: AppColors.darkCardBackground,
-            style: const TextStyle(color: AppColors.textWhite),
-            hint: const Text(
-              'Select venue',
-              style: TextStyle(color: AppColors.textLightGray),
+            style: TextStyle(
+              color: value != null ? AppColors.textWhite : AppColors.textLightGray,
+            ),
+            hint: Text(
+              'Select $label',
+              style: const TextStyle(color: AppColors.textLightGray),
             ),
             items: items.map((String item) {
               return DropdownMenuItem<String>(

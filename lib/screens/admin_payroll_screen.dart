@@ -138,7 +138,9 @@ class _AdminPayrollScreenState extends State<AdminPayrollScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/admin-medic-update');
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryRed,
                     foregroundColor: AppColors.textWhite,

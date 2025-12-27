@@ -24,6 +24,9 @@ import 'screens/calendar_view_screen.dart';
 import 'screens/time_tracking_screen.dart';
 import 'screens/shift_request_screen.dart';
 import 'screens/edit_shift_screen.dart';
+import 'screens/admin_medic_update_screen.dart';
+import 'screens/admin_reports_dashboard_screen.dart';
+import 'screens/utilization_reports_details_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -70,6 +73,9 @@ class MyApp extends StatelessWidget {
         '/time-tracking': (context) => const TimeTrackingScreen(),
         '/shift-request': (context) => const ShiftRequestScreen(),
         '/edit-shift': (context) => const EditShiftScreen(),
+        '/admin-medic-update': (context) => const AdminMedicUpdateScreen(),
+        '/admin-reports-dashboard': (context) => const AdminReportsDashboardScreen(),
+        '/utilization-reports-details': (context) => const UtilizationReportsDetailsScreen(),
       },
     );
   }

@@ -16,14 +16,17 @@ class MessagesListScreen extends StatefulWidget {
 
 class _MessagesListScreenState extends State<MessagesListScreen> {
   int _currentNavIndex = 4;
+  String _selectedFilter = 'All';
+  final List<String> _filters = ['All', 'Admin', 'Client', 'Medic'];
 
-  final List<Map<String, dynamic>> _conversations = [
+  final List<Map<String, dynamic>> _allConversations = [
     {
       'title': 'Event 123',
       'lastMessage': 'i am avaiable for event',
       'sender': 'Client',
       'time': '9:30 AM',
       'unread': true,
+      'type': 'Client',
     },
     {
       'title': 'Event 456',
@@ -31,6 +34,7 @@ class _MessagesListScreenState extends State<MessagesListScreen> {
       'sender': 'Admin',
       'time': '8:15 AM',
       'unread': false,
+      'type': 'Admin',
     },
     {
       'title': 'Event 789',
@@ -38,6 +42,7 @@ class _MessagesListScreenState extends State<MessagesListScreen> {
       'sender': 'Client',
       'time': 'Yesterday',
       'unread': false,
+      'type': 'Client',
     },
     {
       'title': 'Schedule Update',
@@ -45,8 +50,27 @@ class _MessagesListScreenState extends State<MessagesListScreen> {
       'sender': 'Admin',
       'time': '2 days ago',
       'unread': false,
+      'type': 'Admin',
+    },
+    {
+      'title': 'Medic Update',
+      'lastMessage': 'New shift available',
+      'sender': 'Medic',
+      'time': '3 days ago',
+      'unread': false,
+      'type': 'Medic',
     },
   ];
+
+  List<Map<String, dynamic>> get _filteredConversations {
+    if (_selectedFilter == 'All') {
+      return _allConversations;
+    } else {
+      return _allConversations
+          .where((conv) => conv['type'] == _selectedFilter)
+          .toList();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,44 +89,85 @@ class _MessagesListScreenState extends State<MessagesListScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // Search Bar
             Padding(
               padding: const EdgeInsets.all(16),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                decoration: BoxDecoration(
-                  color: AppColors.darkCardBackground,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.search,
-                      color: AppColors.textLightGray,
-                      size: 20,
+              child: Column(
+                children: [
+                  // Search Bar
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: AppColors.darkCardBackground,
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: TextField(
-                        decoration: const InputDecoration(
-                          hintText: 'Search messages',
-                          hintStyle: TextStyle(color: AppColors.textLightGray),
-                          border: InputBorder.none,
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.search,
+                          color: AppColors.textLightGray,
+                          size: 20,
                         ),
-                        style: const TextStyle(color: AppColors.textWhite),
-                      ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: TextField(
+                            decoration: const InputDecoration(
+                              hintText: 'Search messages',
+                              hintStyle: TextStyle(color: AppColors.textLightGray),
+                              border: InputBorder.none,
+                            ),
+                            style: const TextStyle(color: AppColors.textWhite),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(height: 16),
+                  // Filter Tabs
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: _filters.map((filter) {
+                        final isSelected = _selectedFilter == filter;
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _selectedFilter = filter;
+                            });
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.only(right: 12),
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            decoration: BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: isSelected ? AppColors.primaryRed : Colors.transparent,
+                                  width: 2,
+                                ),
+                              ),
+                            ),
+                            child: Text(
+                              filter,
+                              style: TextStyle(
+                                color: isSelected ? AppColors.textWhite : AppColors.textLightGray,
+                                fontSize: 16,
+                                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ],
               ),
             ),
             // Conversations List
             Expanded(
               child: ListView.builder(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: _conversations.length,
+                itemCount: _filteredConversations.length,
                 itemBuilder: (context, index) {
-                  final conversation = _conversations[index];
+                  final conversation = _filteredConversations[index];
                   return _buildConversationItem(conversation);
                 },
               ),

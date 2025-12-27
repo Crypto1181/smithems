@@ -107,7 +107,7 @@ class _AdminMedicUpdateScreenState extends State<AdminMedicUpdateScreen> {
                         _prioritizeUpdate = value;
                       });
                     },
-                    activeColor: AppColors.primaryRed,
+                    activeThumbColor: AppColors.primaryRed,
                   ),
                 ],
               ),
